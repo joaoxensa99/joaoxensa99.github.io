@@ -101,7 +101,7 @@ var Rules = new Phaser.Class({
        this.add.text(590, 480, 'BACK', { font: '50px Courier', fill: '#000000' });
        this.add.text(20, 40, 'Welcome to "The Runner" ', { font: '50px Times', fill: '#ffffff' });
        this.add.text(60, 115, 'Rules: ', { font: '40px Times', fill: '#ffffff' });
-       this.add.text(65, 180, 'The aren´t any rules for this game. Just give your best to', { font: '30px Times', fill: '#ffffff' });
+       this.add.text(65, 180, 'The arenÂ´t any rules for this game. Just give your best to', { font: '30px Times', fill: '#ffffff' });
        this.add.text(65, 220, 'complete the maps and DONT USE CHEATS!! ', { font: '30px Times', fill: '#ffffff' });
        this.add.text(70, 300, 'Controls: Up Arrow ', { font: '30px Times', fill: '#ffffff' });
        this.add.text(190, 350, 'Left Arrow   ', { font: '30px Times', fill: '#ffffff' });
@@ -646,7 +646,7 @@ var GameOver = new Phaser.Class({
 
 });
 
-var config = {
+var game = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
@@ -663,5 +663,5 @@ var synth2;
 var drums;
 var music;
 var vida=3;
-var game = new Phaser.Game(config);
+var game1 = new Phaser.Game(game);
 var blocked = false;
