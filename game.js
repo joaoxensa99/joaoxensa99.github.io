@@ -27,6 +27,10 @@ var Preloader = new Phaser.Class({
          this.load.spritesheet('dude', 'src/games/firstgame/assets/dude.png', { frameWidth: 32, frameHeight: 48 });
          this.load.image('tubo', 'assets/sprites/block.png');   
          this.load.audio('drums', ['assets/audio/tech/drums.ogg', 'assets/audio/tech/drums.mp3']);
+         this.load.audio('overture', [
+        'assets/audio/Ludwig van Beethoven - The Creatures of Prometheus, Op. 43/Overture.ogg',
+        'assets/audio/Ludwig van Beethoven - The Creatures of Prometheus, Op. 43/Overture.mp3'
+    ]);
          this.load.audio('synth2', ['assets/audio/tech/synth2.ogg', 'assets/audio/tech/synth2.mp3']);
          this.load.audio('boden', ['assets/audio/bodenstaendig_2000_in_rock_4bit.mp3', 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
          this.load.image('reverse','http://www.euvosescrevi.com.br/wp-content/uploads/2016/04/earth.jpg');
@@ -55,8 +59,7 @@ var MainMenu = new Phaser.Class({
     },
 
     create: function ()
-    {   
-        
+    {          
         vida=3;
         var back= this.add.image(400,300,'back');
         var play= this.add.image(400,250,'play').setScale(0.2);
@@ -68,6 +71,8 @@ var MainMenu = new Phaser.Class({
         this.add.text(337.5, 230, 'PLAY', { font: '50px Courier', fill: '#00000' });
         this.add.text(335, 360, 'HOW', { font: '50px Courier', fill: '#00000' });
         this.add.text(400, 400, 'TO', { font: '50px Courier', fill: '#00000' });
+
+         this.add.text(520, 540, 'Developed by Xensa99', { font: '20px Courier', fill: '#ffffff' });
 
         play1.setInteractive();
         play1.once('pointerup', function () {
@@ -140,7 +145,6 @@ var Game = new Phaser.Class({
 
     create: function () 
     {
-        
        drums = this.sound.add('drums'); 
        synth2 = this.sound.add('synth2');
        boden = this.sound.add('boden');
@@ -267,12 +271,14 @@ var Game = new Phaser.Class({
     tubos.create(3350, 360, 'tubo').setScale(0.43).refreshBody();
     tubos.create(3600, 360, 'tubo').setScale(0.43).refreshBody();
     
-    tubos.create(3850, 455, 'tubo').setScale(0.43).refreshBody();
-    tubos.create(3850, 395, 'tubo').setScale(0.43).refreshBody();
-    tubos.create(3850, 335, 'tubo').setScale(0.43).refreshBody();
-    tubos.create(3850, 275, 'tubo').setScale(0.43).refreshBody();
-    tubos.create(3850, 215, 'tubo').setScale(0.43).refreshBody();
-    tubos.create(3850, 155, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 450, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 405, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 360, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 315, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 270, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 225, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 180, 'tubo').setScale(0.43).refreshBody();
+    tubos.create(3850, 135, 'tubo').setScale(0.43).refreshBody();
     tubos.create(3850, 90, 'tubo').setScale(0.43).refreshBody();
     //------------------------------------------------------------
     tubos.create(4300, 130, 'tubo').setScale(0.43).refreshBody();
@@ -440,6 +446,21 @@ var Game2 = new Phaser.Class({
     create: function () 
     {
     
+    overture= this.sound.add('overture');
+
+    var loopMarker = {
+        name: 'loop',
+        start: 0,
+        duration: 38.2,
+        config: {
+            loop: true
+        }
+     }
+
+    overture.addMarker(loopMarker);
+    overture.play('loop', {
+        delay: 0
+    });
     this.add.image(350, 280, 'sky2').setScale(1.1);
 
     this.pipes = this.add.group();
@@ -533,7 +554,8 @@ addOnePipe: function(x, y) {
     pipe.checkWorldBounds = true;
     pipe.outOfBoundsKill = true;
 
-    var collider= this.physics.add.overlap(player, pipe, perder, false, this);
+  overlapCollider= this.physics.add.overlap(player, pipe, perder, false, this);
+  overlapTriggered=false;
 },
 
 addRowOfPipes: function() {
@@ -547,19 +569,28 @@ addRowOfPipes: function() {
 });
 
 function perder (player,pipe)
-{
-        vida--;
+{   
+    overture.stop();
+    if(overlapTriggered){
+      this.physics.world.overlapCollider=false;
+      return;
+    };
+    vida--;
         if (vida==0){        
             this.scene.start('gameover');
         }
-        else(this.scene.start('game2'));        
+        else(this.scene.start('game2'));
 
-        collider.active = false;
+     this.physics.world.overlapCollider=true;
+     overlapTriggered=true;
+
 }
+
 
 function ganhar ()
 {
-   this.scene.start('mainmenu');       
+    overture.stop();
+   this.scene.start('gamewon2');       
 }
 
 function collectStar (player, star)
@@ -619,6 +650,43 @@ var GameWon = new Phaser.Class({
     }
 });
 
+var GameWon2 = new Phaser.Class({
+
+    Extends: Phaser.Scene,
+
+    initialize:
+
+    function GameWon2 ()
+    {
+        Phaser.Scene.call(this, { key: 'gamewon2' });
+        window.OVER = this;
+    },
+
+    create: function ()
+    {       
+          
+         music = this.sound.addAudioSprite('kyobi');
+        music.play('title');
+
+        var map3= this.add.image(400,300,'back');
+
+        this.add.sprite(580, 380, 'final').setScale(0.8);
+
+        var play6= this.add.image(151,481,'play').setScale(0.2);
+
+        this.add.text(91, 460, 'Menu', { font: '50px Courier', fill: '#000000' });
+        this.add.text(40, 30, 'You are AMAZING!!!', { font: '45px Arial', fill: '#ffffff' });
+        this.add.text(40, 100, 'You beat Map 2.', { font: '39px Courier', fill: '#ffffff' });
+        this.add.text(40, 160, 'More maps coming soon. Be Aware', { font: '39px Courier', fill: '#ffffff' });
+        
+        play6.setInteractive();
+        play6.once('pointerup', function () {
+             music.stop();
+            this.scene.start('mainmenu');
+        }, this);       
+    }
+});
+
 var GameOver = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -646,7 +714,7 @@ var GameOver = new Phaser.Class({
 
 });
 
-var game = {
+var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
@@ -657,11 +725,14 @@ var game = {
             debug: false
         }
     },
-    scene: [ Preloader, MainMenu, Game, Game2, Rules, GameOver,GameWon ]
+    scene: [ Preloader, MainMenu, Game, Game2, Rules, GameOver,GameWon, GameWon2 ]
 };
 var synth2;
 var drums;
+var overture;
 var music;
 var vida=3;
-var game1 = new Phaser.Game(game);
+var overlapCollider;
+var overlapTriggered = false;
+var game = new Phaser.Game(config);
 var blocked = false;
